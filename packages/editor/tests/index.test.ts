@@ -125,6 +125,23 @@ test("Tab sinks a list item into a nested list", () => {
   editor.destroy();
 });
 
+test("typing '> q' wraps the paragraph into a blockquote", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "> q");
+  expect(editor.view.state.doc.firstChild?.type.name).toBe("blockquote");
+  expect(editor.view.state.doc.textContent).toBe("q");
+  editor.destroy();
+});
+
+test("typing '> ' mid-paragraph does NOT trigger blockquote rule", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "hello > world");
+  expect(editor.view.state.doc.firstChild?.type.name).toBe("paragraph");
+  editor.destroy();
+});
+
 test("Shift-Tab lifts a nested list item back up", () => {
   const mount = document.createElement("div");
   const editor = createEditor({ mount });
