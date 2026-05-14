@@ -4,7 +4,7 @@
   padding: 24px 32px;
   font: 16px/1.7 var(--rte-font, system-ui, sans-serif);
   color: var(--rte-text, #1f2330);
-  caret-color: var(--rte-caret, #aa3bff);
+  caret-color: var(--rte-caret, #3b82f6);
 }
 
 .ProseMirror p {
@@ -70,4 +70,10 @@
   border: none;
   border-top: 1px solid var(--rte-border, #e5e4e7);
   margin: 1.6em 0;
+}
+
+.ProseMirror-selectednode {
+  outline: 2px solid #93c5fd;
+  outline-offset: 4px;
+  border-radius: 2px;
 }
