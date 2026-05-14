@@ -1,7 +1,13 @@
 import { inputRules } from "prosemirror-inputrules";
 import type { Schema } from "prosemirror-model";
 import type { Plugin } from "prosemirror-state";
-import { blockquoteRule, bulletListRule, headingRule, orderedListRule } from "./rules.ts";
+import {
+  blockquoteRule,
+  bulletListRule,
+  codeFenceRule,
+  headingRule,
+  orderedListRule,
+} from "./rules.ts";
 
 export function markdownShortcutsPlugin(schema: Schema): Plugin {
   return inputRules({
@@ -10,6 +16,7 @@ export function markdownShortcutsPlugin(schema: Schema): Plugin {
       bulletListRule(schema),
       orderedListRule(schema),
       blockquoteRule(schema),
+      codeFenceRule(schema),
     ],
   });
 }

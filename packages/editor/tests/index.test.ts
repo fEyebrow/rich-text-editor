@@ -134,6 +134,34 @@ test("typing '> q' wraps the paragraph into a blockquote", () => {
   editor.destroy();
 });
 
+test("typing '``` ' creates an empty code block", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "``` ");
+  expect(editor.view.state.doc.firstChild?.type.name).toBe("code_block");
+  expect(editor.view.state.doc.firstChild?.attrs.params).toBe("");
+  editor.destroy();
+});
+
+test("typing '```ts ' creates a code block with params='ts'", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "```ts ");
+  expect(editor.view.state.doc.firstChild?.type.name).toBe("code_block");
+  expect(editor.view.state.doc.firstChild?.attrs.params).toBe("ts");
+  editor.destroy();
+});
+
+test("typing inside a code block does NOT trigger rules", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "``` ");
+  typeText(editor.view, "# not a heading");
+  expect(editor.view.state.doc.firstChild?.type.name).toBe("code_block");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("# not a heading");
+  editor.destroy();
+});
+
 test("typing '> ' mid-paragraph does NOT trigger blockquote rule", () => {
   const mount = document.createElement("div");
   const editor = createEditor({ mount });
