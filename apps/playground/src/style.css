@@ -1,0 +1,99 @@
+:root {
+  --bg: #fff;
+  --bg-soft: #faf9f7;
+  --text: #1f2330;
+  --muted: #6b6375;
+  --border: #e5e4e7;
+  --accent: #aa3bff;
+  color-scheme: light dark;
+  font:
+    15px/1.5 system-ui,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16171d;
+    --bg-soft: #1c1d24;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --border: #2e303a;
+    --accent: #c084fc;
+  }
+}
+
+body {
+  margin: 0;
+}
+
+#app {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+.pane {
+  overflow: auto;
+  min-height: 0;
+}
+
+.pane + .pane {
+  border-left: 1px solid var(--border);
+}
+
+.source {
+  background: var(--bg-soft);
+}
+
+.source pre {
+  margin: 0;
+  padding: 24px 32px;
+  font:
+    13px/1.6 ui-monospace,
+    Consolas,
+    monospace;
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 900px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+  .pane + .pane {
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+}
