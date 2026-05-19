@@ -2,6 +2,10 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   staged: {
+    "packages/editor/**/*": () => [
+      "vp run --filter ./packages/editor check --fix",
+      "vp run --filter ./packages/editor test --run",
+    ],
     "*": "vp check --fix",
   },
   fmt: {},
