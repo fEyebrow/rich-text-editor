@@ -60,6 +60,357 @@ test("Backspace immediately after heading conversion undoes the rule", () => {
   editor.destroy();
 });
 
+test("typing '**bold**' converts the Marked Text to strong on the Closing Delimiter", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "**bold**");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("bold");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["strong"]);
+  expect(editor.getMarkdown()).toBe("**bold**");
+  editor.destroy();
+});
+
+test("typing '__bold__' converts the Marked Text to strong on the Closing Delimiter", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "__bold__");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("bold");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["strong"]);
+  expect(editor.getMarkdown()).toBe("**bold**");
+  editor.destroy();
+});
+
+test("typing '_em_' converts the Marked Text to emphasis on the Closing Delimiter", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "_em_");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("em");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["em"]);
+  expect(editor.getMarkdown()).toBe("*em*");
+  editor.destroy();
+});
+
+test("typing '*em*' converts the Marked Text to emphasis on the Closing Delimiter", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "*em*");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("em");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["em"]);
+  expect(editor.getMarkdown()).toBe("*em*");
+  editor.destroy();
+});
+
+test("typing '`code`' converts the Marked Text to inline code on the Closing Delimiter", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "`code`");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("code");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["code"]);
+  expect(editor.getMarkdown()).toBe("`code`");
+  editor.destroy();
+});
+
+test("typing '[text](https://example.com)' converts the Marked Text to a link on the Closing Delimiter", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "[text](https://example.com)");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("text");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["link"]);
+  expect(paragraph.firstChild?.marks[0]?.attrs.href).toBe("https://example.com");
+  expect(editor.getMarkdown()).toBe("[text](https://example.com)");
+  editor.destroy();
+});
+
+test("typing '[text](/relative/path)' converts a relative Link Destination", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "[text](/relative/path)");
+  expect(editor.view.state.doc.firstChild?.firstChild?.marks[0]?.attrs.href).toBe("/relative/path");
+  expect(editor.getMarkdown()).toBe("[text](/relative/path)");
+  editor.destroy();
+});
+
+test("typing '[text](#anchor)' converts an anchor Link Destination", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "[text](#anchor)");
+  expect(editor.view.state.doc.firstChild?.firstChild?.marks[0]?.attrs.href).toBe("#anchor");
+  expect(editor.getMarkdown()).toBe("[text](#anchor)");
+  editor.destroy();
+});
+
+test("typing '[text](mailto:a@b.com)' converts a mailto Link Destination", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "[text](mailto:a@b.com)");
+  expect(editor.view.state.doc.firstChild?.firstChild?.marks[0]?.attrs.href).toBe("mailto:a@b.com");
+  expect(editor.getMarkdown()).toBe("[text](mailto:a@b.com)");
+  editor.destroy();
+});
+
+test("single-character content converts for every inline mark", () => {
+  const cases: { input: string; mark: string | string[]; text: string }[] = [
+    { input: "**b**", mark: ["strong"], text: "b" },
+    { input: "__b__", mark: ["strong"], text: "b" },
+    { input: "*b*", mark: ["em"], text: "b" },
+    { input: "_b_", mark: ["em"], text: "b" },
+    { input: "`b`", mark: ["code"], text: "b" },
+    { input: "***b***", mark: ["em", "strong"], text: "b" },
+    { input: "___b___", mark: ["em", "strong"], text: "b" },
+  ];
+  for (const c of cases) {
+    const mount = document.createElement("div");
+    const editor = createEditor({ mount });
+    typeText(editor.view, c.input);
+    const paragraph = editor.view.state.doc.firstChild!;
+    expect(paragraph.textContent).toBe(c.text);
+    expect(paragraph.firstChild?.marks.map((m) => m.type.name)).toEqual(c.mark);
+    editor.destroy();
+  }
+});
+
+test("Backspace immediately after strong conversion restores the literal Markdown syntax", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "**bold**");
+  pressKey(editor.view, "Backspace");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("**bold**");
+  editor.destroy();
+});
+
+test("typing '** bold **' keeps delimiter-adjacent whitespace literal", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "** bold **");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("** bold **");
+  editor.destroy();
+});
+
+test("typing 'foo_bar_baz' does NOT convert underscore syntax inside a word", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "foo_bar_baz");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("foo_bar_baz");
+  editor.destroy();
+});
+
+test("typing 'foo__bar__baz' does NOT convert double-underscore strong inside a word", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "foo__bar__baz");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("foo__bar__baz");
+  editor.destroy();
+});
+
+test("typing '_em_' at a word boundary still converts to emphasis", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "hello _em_");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("hello em");
+  const emNode = paragraph.lastChild;
+  expect(emNode?.marks.map((m) => m.type.name)).toEqual(["em"]);
+  editor.destroy();
+});
+
+test("typing '**bold**!' continues with plain text after the Closing Delimiter", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "**bold**!");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("bold!");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["strong"]);
+  expect(paragraph.lastChild?.marks).toEqual([]);
+  editor.destroy();
+});
+
+test("typing '***both***' converts to a Combined Inline Markdown Mark", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "***both***");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("both");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["em", "strong"]);
+  expect(editor.getMarkdown()).toBe("***both***");
+  editor.destroy();
+});
+
+test("typing '___both___' converts to a Combined Inline Markdown Mark when not inside a word", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "___both___");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("both");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["em", "strong"]);
+  editor.destroy();
+});
+
+test("typing '**_both_**' converts nested syntax to a Combined Inline Markdown Mark", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "**_both_**");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("both");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["em", "strong"]);
+  expect(editor.getMarkdown()).toBe("***both***");
+  editor.destroy();
+});
+
+test("typing '`**not bold**`' keeps Markdown-looking text inside inline code literal", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "`**not bold**`");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("**not bold**");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["code"]);
+  editor.destroy();
+});
+
+test("typing '*__bold__*' wraps already-converted strong text in emphasis", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "*__bold__*");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("bold");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["em", "strong"]);
+  editor.destroy();
+});
+
+test("typing '__*both*__' converts nested syntax to a Combined Inline Markdown Mark", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "__*both*__");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("both");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["em", "strong"]);
+  editor.destroy();
+});
+
+test("typing '**`code`**' wraps inline code in a strong mark", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "**`code`**");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("code");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["strong", "code"]);
+  expect(editor.getMarkdown()).toBe("**`code`**");
+  editor.destroy();
+});
+
+test("typing '[**bold**](https://example.com)' converts rich link text", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "[**bold**](https://example.com)");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("bold");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["strong", "link"]);
+  expect(paragraph.firstChild?.marks[1]?.attrs.href).toBe("https://example.com");
+  expect(editor.getMarkdown()).toBe("[**bold**](https://example.com)");
+  editor.destroy();
+});
+
+test("typing '[`code`](https://example.com)' converts rich link text with inline code", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "[`code`](https://example.com)");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("code");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["link", "code"]);
+  expect(paragraph.firstChild?.marks[0]?.attrs.href).toBe("https://example.com");
+  editor.destroy();
+});
+
+test("typing '[**_both_**](https://example.com)' converts rich link text with combined marks", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "[**_both_**](https://example.com)");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("both");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual([
+    "em",
+    "strong",
+    "link",
+  ]);
+  expect(paragraph.firstChild?.marks[2]?.attrs.href).toBe("https://example.com");
+  editor.destroy();
+});
+
+test("typing '[*em*](https://example.com)' converts rich link text with emphasis", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "[*em*](https://example.com)");
+  const paragraph = editor.view.state.doc.firstChild!;
+  expect(paragraph.textContent).toBe("em");
+  expect(paragraph.firstChild?.marks.map((mark) => mark.type.name)).toEqual(["em", "link"]);
+  expect(paragraph.firstChild?.marks[1]?.attrs.href).toBe("https://example.com");
+  editor.destroy();
+});
+
+test("typing '\\**not bold**' keeps an Escaped Inline Markdown Mark literal", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "\\**not bold**");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("\\**not bold**");
+  editor.destroy();
+});
+
+test("typing '\\`not code\\`' keeps escaped inline code literal", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "\\`not code\\`");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("\\`not code\\`");
+  editor.destroy();
+});
+
+test("typing '\\[not link](x)' keeps escaped link syntax literal", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "\\[not link](x)");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("\\[not link](x)");
+  editor.destroy();
+});
+
+test("typing inline Markdown inside a heading converts within the current text block", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "# ");
+  typeText(editor.view, "**bold**");
+  expect(editor.view.state.doc.firstChild?.type.name).toBe("heading");
+  expect(editor.view.state.doc.firstChild?.firstChild?.marks.map((mark) => mark.type.name)).toEqual(
+    ["strong"],
+  );
+  expect(editor.getMarkdown()).toBe("# **bold**");
+  editor.destroy();
+});
+
+test("typing inline Markdown inside a list item converts within the current text block", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "- ");
+  typeText(editor.view, "**bold**");
+  const text = editor.view.state.doc.firstChild?.firstChild?.firstChild?.firstChild;
+  expect(text?.marks.map((mark) => mark.type.name)).toEqual(["strong"]);
+  expect(editor.getMarkdown()).toBe("* **bold**");
+  editor.destroy();
+});
+
+test("typing inline Markdown inside a blockquote converts within the current text block", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "> ");
+  typeText(editor.view, "**bold**");
+  const text = editor.view.state.doc.firstChild?.firstChild?.firstChild;
+  expect(text?.marks.map((mark) => mark.type.name)).toEqual(["strong"]);
+  expect(editor.getMarkdown()).toBe("> **bold**");
+  editor.destroy();
+});
+
 test("typing '- a' wraps the paragraph into a bullet list", () => {
   const mount = document.createElement("div");
   const editor = createEditor({ mount });
@@ -210,6 +561,16 @@ test("typing inside a code block does NOT trigger rules", () => {
   typeText(editor.view, "# not a heading");
   expect(editor.view.state.doc.firstChild?.type.name).toBe("code_block");
   expect(editor.view.state.doc.firstChild?.textContent).toBe("# not a heading");
+  editor.destroy();
+});
+
+test("typing '**bold**' inside a code block does NOT convert inline Markdown", () => {
+  const mount = document.createElement("div");
+  const editor = createEditor({ mount });
+  typeText(editor.view, "``` ");
+  typeText(editor.view, "**bold**");
+  expect(editor.view.state.doc.firstChild?.type.name).toBe("code_block");
+  expect(editor.view.state.doc.firstChild?.textContent).toBe("**bold**");
   editor.destroy();
 });
 

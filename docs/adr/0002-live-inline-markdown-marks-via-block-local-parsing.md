@@ -1,0 +1,5 @@
+# Live inline markdown marks via block-local parsing
+
+To get Typora-style live conversion for inline Markdown, we will treat inline marks as block-local rich-text transformations rather than simple plain-text regex replacements. Closing delimiters convert bold, emphasis, inline code, and links immediately; mixed and nested marks are allowed to form incrementally, including outer marks wrapping already-converted inline content, while code spans stop Markdown interpretation inside themselves.
+
+This rejects a pure `prosemirror-inputrules` approach for inline marks because simple text matches cannot reliably cover nested strong/emphasis, links whose text contains marks, code spans wrapped by other marks, underscore word-boundary rules, escaped literal syntax, and conversion over mixed inline content in one text block. The conversion boundary remains deliberately narrow: no cross-block matching, no blank marked text, no delimiter-adjacent whitespace, no Markdown interpretation inside link destinations, and simple link destinations only for live typing.
