@@ -1,7 +1,7 @@
 import { Plugin, TextSelection } from "prosemirror-state";
 import type { Command, EditorState, Transaction } from "prosemirror-state";
 import type { Fragment } from "prosemirror-model";
-import { defaultMarkdownParser } from "prosemirror-markdown";
+import { markdownParser } from "../markdown/parser.ts";
 import { serializeTextblockToRawMarkdown } from "./raw-markdown.ts";
 
 type UndoableInput = { from: number; to: number; content: Fragment } | null;
@@ -16,7 +16,7 @@ const inlineMarkdownPatterns = [
   /(?<!\\)`(\S(?:.*?\S)?)`$/,
 ];
 
-export function liveInlineMarkdownPlugin() {
+export function liveInlineMarksPlugin() {
   let plugin: Plugin<UndoableInput> = new Plugin<UndoableInput>({
     state: {
       init() {
@@ -42,15 +42,15 @@ export function liveInlineMarkdownPlugin() {
         return true;
       },
     },
-    isLiveInlineMarkdown: true,
+    isLiveInlineMarks: true,
   });
 
   return plugin;
 }
 
-export const undoLiveInlineMarkdown: Command = (state, dispatch) => {
+export const undoLiveInlineMarks: Command = (state, dispatch) => {
   for (const plugin of state.plugins) {
-    if (!(plugin.spec as { isLiveInlineMarkdown?: boolean }).isLiveInlineMarkdown) continue;
+    if (!(plugin.spec as { isLiveInlineMarks?: boolean }).isLiveInlineMarks) continue;
     const undoable = plugin.getState(state) as UndoableInput;
     if (!undoable) continue;
     if (dispatch) {
@@ -74,7 +74,7 @@ function applyInlineMarkdownConversion(
   const markdown = serializeTextblockToRawMarkdown(parent);
   if (!hasInlineMarkdownCandidate(markdown)) return null;
 
-  const parsedBlock = defaultMarkdownParser.parse(markdown).firstChild;
+  const parsedBlock = markdownParser.parse(markdown).firstChild;
   if (!parsedBlock || parsedBlock.type !== parent.type) return null;
   if (!sameAttrs(parent.attrs, parsedBlock.attrs)) return null;
   if (parent.content.eq(parsedBlock.content)) return null;

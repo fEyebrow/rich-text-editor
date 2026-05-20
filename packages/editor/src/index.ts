@@ -4,12 +4,14 @@ import { undoInputRule } from "prosemirror-inputrules";
 import { keymap } from "prosemirror-keymap";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
-import { markdownClipboardTextParser } from "./clipboard/markdown-paste.ts";
-import { liveInlineMarkdownPlugin, undoLiveInlineMarkdown } from "./inline-markdown/index.ts";
-import { horizontalRuleOnEnter } from "./keymap/horizontal-rule-on-enter.ts";
-import { listKeymap } from "./keymap/list-keymap.ts";
-import { markdownParser, markdownSchema, markdownSerializer } from "./markdown.ts";
-import { markdownShortcutsPlugin } from "./markdown-shortcuts/index.ts";
+import { markdownPasteParser } from "./clipboard/paste.ts";
+import { thematicBreakOnEnter } from "./keymap/thematic-break.ts";
+import { listKeymap } from "./keymap/list.ts";
+import { liveInlineMarksPlugin, undoLiveInlineMarks } from "./live/inline-marks.ts";
+import { blockShortcutsPlugin } from "./live/block-shortcuts.ts";
+import { markdownParser } from "./markdown/parser.ts";
+import { markdownSerializer } from "./markdown/serializer.ts";
+import { editorSchema } from "./schema/index.ts";
 
 export interface EditorOptions {
   mount: HTMLElement;
@@ -29,23 +31,23 @@ export function createEditor(options: EditorOptions): EditorHandle {
 
   const state = EditorState.create({
     doc: markdownParser.parse(initialMarkdown) ?? undefined,
-    schema: markdownSchema,
+    schema: editorSchema,
     plugins: [
       history(),
       keymap({ "Mod-z": undo, "Mod-y": redo, "Mod-Shift-z": redo }),
-      keymap({ Backspace: undoLiveInlineMarkdown }),
+      keymap({ Backspace: undoLiveInlineMarks }),
       keymap({ Backspace: undoInputRule }),
-      keymap({ Enter: horizontalRuleOnEnter }),
-      keymap(listKeymap(markdownSchema)),
-      liveInlineMarkdownPlugin(),
-      markdownShortcutsPlugin(markdownSchema),
+      keymap({ Enter: thematicBreakOnEnter }),
+      keymap(listKeymap(editorSchema)),
+      liveInlineMarksPlugin(),
+      blockShortcutsPlugin(editorSchema),
       keymap(baseKeymap),
     ],
   });
 
   const view = new EditorView(mount, {
     state,
-    clipboardTextParser: markdownClipboardTextParser(markdownSchema),
+    clipboardTextParser: markdownPasteParser(),
     dispatchTransaction(tr) {
       const next = view.state.apply(tr);
       view.updateState(next);
@@ -63,7 +65,7 @@ export function createEditor(options: EditorOptions): EditorHandle {
       if (!doc) return;
       const newState = EditorState.create({
         doc,
-        schema: markdownSchema,
+        schema: editorSchema,
         plugins: view.state.plugins,
       });
       view.updateState(newState);
@@ -72,4 +74,4 @@ export function createEditor(options: EditorOptions): EditorHandle {
   };
 }
 
-export { markdownSchema };
+export { editorSchema };

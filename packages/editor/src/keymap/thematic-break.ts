@@ -1,7 +1,7 @@
 import { TextSelection } from "prosemirror-state";
 import type { Command } from "prosemirror-state";
 
-export const horizontalRuleOnEnter: Command = (state, dispatch) => {
+export const thematicBreakOnEnter: Command = (state, dispatch) => {
   const { $from } = state.selection;
   const parent = $from.parent;
 

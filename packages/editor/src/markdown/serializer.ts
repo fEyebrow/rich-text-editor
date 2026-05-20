@@ -1,11 +1,14 @@
 import {
-  defaultMarkdownParser,
   defaultMarkdownSerializer,
   MarkdownSerializer,
   MarkdownSerializerState,
 } from "prosemirror-markdown";
-import { schema } from "prosemirror-markdown";
 import type { Mark, Node as ProseMirrorNode } from "prosemirror-model";
+
+// Step 1 placeholder: keeps the existing RichTextMarkdownSerializer hack that
+// patches MarkdownSerializerState to honor a stable mark order. Step 2 will
+// replace this with a hand-written serializer that does not subclass
+// MarkdownSerializerState at all.
 
 const BaseMarkdownSerializerState = MarkdownSerializerState as unknown as new (
   nodes: MarkdownSerializer["nodes"],
@@ -139,8 +142,6 @@ function sortMarksForMarkdown(marks: readonly Mark[]): Mark[] {
   );
 }
 
-export const markdownSchema = schema;
-export const markdownParser = defaultMarkdownParser;
 export const markdownSerializer = new RichTextMarkdownSerializer(
   defaultMarkdownSerializer.nodes,
   defaultMarkdownSerializer.marks,
