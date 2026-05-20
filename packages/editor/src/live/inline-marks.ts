@@ -2,7 +2,7 @@ import { Plugin, TextSelection } from "prosemirror-state";
 import type { Command, EditorState, Transaction } from "prosemirror-state";
 import type { Fragment } from "prosemirror-model";
 import { markdownParser } from "../markdown/parser.ts";
-import { serializeTextblockToRawMarkdown } from "./raw-markdown.ts";
+import { serializeTextblockToRawMarkdown } from "../markdown/serializer.ts";
 
 type UndoableInput = { from: number; to: number; content: Fragment } | null;
 const inlineMarkdownPatterns = [
