@@ -4,7 +4,7 @@ The editor owns its markdown engine — schema, parser, and serializer all live 
 
 ## What this fixes
 
-`prosemirror-markdown` couples three independent things behind one package: a CommonMark `Schema` literal, a `markdown-it` → PM tree converter, and a PM → CommonMark serializer. Coupling forces them to evolve together. In practice we needed to (a) reorder serializer mark output for stable round-trip, and (b) reach the schema and parser separately for live conversion. Both were possible only by reaching past the package's exported API into its class internals (`MarkdownSerializerState`), which then broke when the upstream renamed or reshaped those internals.
+`prosemirror-markdown` couples three independent things behind one package: a CommonMark `Schema` literal, a `markdown-it` → PM tree converter, and a PM → CommonMark serializer. Coupling forces them to evolve together. In practice we needed to reorder serializer mark output for stable round-trip, which was only possible by reaching past the package's exported API into its class internals (`MarkdownSerializerState`); that internal contract broke when upstream renamed or reshaped those internals.
 
 Owning the three pieces in this repo gives us a stable surface to extend without subclassing third-party state.
 

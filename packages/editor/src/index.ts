@@ -1,14 +1,11 @@
 import { baseKeymap } from "prosemirror-commands";
 import { history, redo, undo } from "prosemirror-history";
-import { undoInputRule } from "prosemirror-inputrules";
 import { keymap } from "prosemirror-keymap";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { markdownPasteParser } from "./clipboard/paste.ts";
 import { thematicBreakOnEnter } from "./keymap/thematic-break.ts";
 import { listKeymap } from "./keymap/list.ts";
-import { liveInlineMarksPlugin, undoLiveInlineMarks } from "./live/inline-marks.ts";
-import { blockShortcutsPlugin } from "./live/block-shortcuts.ts";
 import { markdownParser } from "./markdown/parser.ts";
 import { markdownSerializer } from "./markdown/serializer.ts";
 import { editorSchema } from "./schema/index.ts";
@@ -35,12 +32,8 @@ export function createEditor(options: EditorOptions): EditorHandle {
     plugins: [
       history(),
       keymap({ "Mod-z": undo, "Mod-y": redo, "Mod-Shift-z": redo }),
-      keymap({ Backspace: undoLiveInlineMarks }),
-      keymap({ Backspace: undoInputRule }),
       keymap({ Enter: thematicBreakOnEnter }),
       keymap(listKeymap(editorSchema)),
-      liveInlineMarksPlugin(),
-      blockShortcutsPlugin(editorSchema),
       keymap(baseKeymap),
     ],
   });
