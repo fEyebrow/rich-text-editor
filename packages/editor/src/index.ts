@@ -6,6 +6,7 @@ import { EditorView } from "prosemirror-view";
 import { markdownPasteParser } from "./clipboard/paste.ts";
 import { thematicBreakOnEnter } from "./keymap/thematic-break.ts";
 import { listKeymap } from "./keymap/list.ts";
+import { liveItalic } from "./live/italic.ts";
 import { markdownParser } from "./markdown/parser.ts";
 import { markdownSerializer } from "./markdown/serializer.ts";
 import { editorSchema } from "./schema/index.ts";
@@ -34,6 +35,7 @@ export function createEditor(options: EditorOptions): EditorHandle {
       keymap({ "Mod-z": undo, "Mod-y": redo, "Mod-Shift-z": redo }),
       keymap({ Enter: thematicBreakOnEnter }),
       keymap(listKeymap(editorSchema)),
+      liveItalic(editorSchema),
       keymap(baseKeymap),
     ],
   });
@@ -68,3 +70,5 @@ export function createEditor(options: EditorOptions): EditorHandle {
 }
 
 export { editorSchema };
+export { EDITOR_SPEC_FEATURES } from "./specs.ts";
+export type { EditorSpecCase, EditorSpecFeature, EditorSpecStep } from "./specs.ts";

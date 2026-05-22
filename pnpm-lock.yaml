@@ -39,6 +39,9 @@ importers:
       '@rte/editor':
         specifier: workspace:*
         version: link:../../packages/editor
+      prosemirror-state:
+        specifier: ^1.4.3
+        version: 1.4.4
     devDependencies:
       typescript:
         specifier: ~6.0.2
