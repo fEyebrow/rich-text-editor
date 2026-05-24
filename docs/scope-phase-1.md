@@ -19,7 +19,6 @@ Typora-style live preview editor. First phase locks in the live inline mark loop
 - Ordered list `1.`
 - Blockquote `>`
 - Thematic break `---`
-- Fenced code block ` ``` `
 
 ### Interaction
 
@@ -30,6 +29,7 @@ Typora-style live preview editor. First phase locks in the live inline mark loop
 
 ## Deferred to later phases
 
+- Fenced code block ` ``` ` (trigger model to be designed in a later phase)
 - Tables, task lists, links, images, autolinks
 - Highlight `==`, sub/superscript, emoji shortcodes, inline/block math
 - Setext headings, indented code blocks, footnotes, YAML front matter, `[TOC]`, Mermaid
