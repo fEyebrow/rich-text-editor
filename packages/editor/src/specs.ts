@@ -50,7 +50,7 @@ const EDITOR_SPEC_FEATURE_DEFINITIONS: EditorSpecFeatureDefinition[] = [
         checkpoints: [
           {
             step: 3,
-            expectedProjection: "<p><pending>*</pending>1<pending>*</pending>|</p>",
+            expectedProjection: "<p><pending>*</pending><i>1</i><pending>*</pending>|</p>",
             expectedMarkdown: "*1*",
           },
           {
@@ -68,8 +68,76 @@ const EDITOR_SPEC_FEATURE_DEFINITIONS: EditorSpecFeatureDefinition[] = [
         checkpoints: [
           {
             step: 2,
-            expectedProjection: "<p><pending>*</pending>1<pending>*</pending>|</p>",
+            expectedProjection: "<p><pending>*</pending><i>1</i><pending>*</pending>|</p>",
             expectedMarkdown: "*1*",
+          },
+        ],
+      },
+      {
+        id: "live-italic-reveal-pending-at-mark-boundaries",
+        title: "Reveal pending markers at mark boundaries",
+        initialMarkdown: "|",
+        keyevents: ["*", "1", "*", " ", "ArrowLeft", "ArrowLeft"],
+        checkpoints: [
+          {
+            step: 5,
+            title: "cursor reaches mark end",
+            expectedProjection: "<p><pending>*</pending><i>1</i><pending>*</pending>| </p>",
+            expectedMarkdown: "*1*\u00a0",
+          },
+          {
+            step: 6,
+            title: "cursor reaches mark start",
+            expectedProjection: "<p>|<pending>*</pending><i>1</i><pending>*</pending> </p>",
+            expectedMarkdown: "*1*\u00a0",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "live-strong",
+    title: "Live Strong",
+    cases: [
+      {
+        id: "live-strong-basic",
+        title: "Basic commit flow",
+        initialMarkdown: "|",
+        keyevents: ["*", "*", "1", "*", "*", " "],
+        checkpoints: [
+          {
+            step: 5,
+            expectedProjection: "<p><pending>**</pending><b>1</b><pending>**</pending>|</p>",
+            expectedMarkdown: "**1**",
+          },
+          {
+            step: 6,
+            expectedProjection: "<p><b>1</b> |</p>",
+            expectedMarkdown: "**1**\u00a0",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "live-code",
+    title: "Live Code",
+    cases: [
+      {
+        id: "live-code-basic",
+        title: "Basic commit flow",
+        initialMarkdown: "|",
+        keyevents: ["`", "1", "`", " "],
+        checkpoints: [
+          {
+            step: 3,
+            expectedProjection: "<p><pending>`</pending><code>1</code><pending>`</pending>|</p>",
+            expectedMarkdown: "`1`",
+          },
+          {
+            step: 4,
+            expectedProjection: "<p><code>1</code> |</p>",
+            expectedMarkdown: "`1`\u00a0",
           },
         ],
       },

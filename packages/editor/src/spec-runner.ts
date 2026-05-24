@@ -223,6 +223,9 @@ function serializeNode(
 
   if (node.classList.contains("ProseMirror")) return content;
   if (node.classList.contains("md-pending")) return `<pending>${content}</pending>`;
+  if (node.classList.contains("md-live-em")) return `<i>${content}</i>`;
+  if (node.classList.contains("md-live-strong")) return `<b>${content}</b>`;
+  if (node.classList.contains("md-live-code")) return `<code>${content}</code>`;
 
   const serializer = tags[node.tagName];
   return serializer ? serializer(content, node) : content;

@@ -64,7 +64,8 @@ export function renderSpecs(root: HTMLElement): void {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
 
-    const featureId = target.dataset.featureId;
+    const featureButton = target.closest<HTMLElement>("[data-feature-id]");
+    const featureId = featureButton?.dataset.featureId;
     if (featureId && featureId !== activeFeatureId) {
       activeFeatureId = featureId;
       renderFeatureList();

@@ -81,3 +81,19 @@
 .ProseMirror .md-pending {
   color: var(--rte-pending, #b8b3c4);
 }
+
+.ProseMirror .md-live-em {
+  font-style: italic;
+}
+
+.ProseMirror .md-live-strong {
+  font-weight: 700;
+}
+
+.ProseMirror .md-live-code {
+  background: var(--rte-code-bg, #f4f3ec);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.92em;
+}
