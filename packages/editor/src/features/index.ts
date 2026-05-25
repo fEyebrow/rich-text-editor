@@ -1,6 +1,5 @@
 import type { Schema } from "prosemirror-model";
 import { codeKeymap, liveCode, serializeLiveCodePendingMarkdown } from "./code.ts";
-import { listKeymap } from "./list.ts";
 import {
   italicKeymap,
   italicMarkdownParseSpecs,
@@ -12,6 +11,7 @@ import {
 } from "./italic.ts";
 import { liveStrong, serializeLiveStrongPendingMarkdown, strongKeymap } from "./strong.ts";
 import { thematicBreakKeymap, thematicBreakLeaveLine } from "./thematic-break.ts";
+import { unorderedListInputRules, unorderedListKeymap } from "./unordered-list.ts";
 
 export const featureMarkSpecs = {
   ...italicMarkSpecs,
@@ -34,7 +34,13 @@ export function serializeFeatureMarkdown(markdown: string): string {
 }
 
 export function createFeaturePlugins(schema: Schema) {
-  return [liveItalic(schema), liveStrong(schema), liveCode(schema), thematicBreakLeaveLine(schema)];
+  return [
+    liveItalic(schema),
+    liveStrong(schema),
+    liveCode(schema),
+    thematicBreakLeaveLine(schema),
+    unorderedListInputRules(schema),
+  ];
 }
 
 export function createFeatureKeymaps(schema: Schema) {
@@ -43,6 +49,6 @@ export function createFeatureKeymaps(schema: Schema) {
     italicKeymap(schema),
     strongKeymap(schema),
     codeKeymap(schema),
-    listKeymap(schema),
+    unorderedListKeymap(schema),
   ];
 }
