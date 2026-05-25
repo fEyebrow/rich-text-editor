@@ -22,6 +22,7 @@ import {
 } from "./strikethrough.ts";
 import { liveStrong, serializeLiveStrongPendingMarkdown, strongKeymap } from "./strong.ts";
 import { thematicBreakKeymap, thematicBreakLeaveLine } from "./thematic-break.ts";
+import { orderedListInputRules } from "./ordered-list.ts";
 import { unorderedListInputRules, unorderedListKeymap } from "./unordered-list.ts";
 
 export const featureMarkSpecs = {
@@ -58,6 +59,7 @@ export function createFeaturePlugins(schema: Schema) {
     thematicBreakLeaveLine(schema),
     atxHeading(schema),
     unorderedListInputRules(schema),
+    orderedListInputRules(schema),
     blockquoteInputRules(schema),
   ];
 }
