@@ -229,6 +229,9 @@ const DEFAULT_TAGS: Record<string, TagSerializer> = {
   I: (c) => `<i>${c}</i>`,
   STRONG: (c) => `<b>${c}</b>`,
   B: (c) => `<b>${c}</b>`,
+  S: (c) => `<s>${c}</s>`,
+  DEL: (c) => `<s>${c}</s>`,
+  STRIKE: (c) => `<s>${c}</s>`,
   A: (c, el) => {
     const href = el.getAttribute("href");
     const title = el.getAttribute("title");
@@ -295,6 +298,7 @@ function serializeNode(
   if (node.classList.contains("md-pending")) return `<pending>${content}</pending>`;
   if (node.classList.contains("md-live-em")) return `<i>${content}</i>`;
   if (node.classList.contains("md-live-strong")) return `<b>${content}</b>`;
+  if (node.classList.contains("md-live-strikethrough")) return `<s>${content}</s>`;
   if (node.classList.contains("md-live-code")) return `<code>${content}</code>`;
 
   const serializer = tags[node.tagName];

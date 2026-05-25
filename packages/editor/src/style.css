@@ -90,6 +90,10 @@
   font-weight: 700;
 }
 
+.ProseMirror .md-live-strikethrough {
+  text-decoration: line-through;
+}
+
 .ProseMirror .md-live-code {
   background: var(--rte-code-bg, #f4f3ec);
   padding: 2px 6px;

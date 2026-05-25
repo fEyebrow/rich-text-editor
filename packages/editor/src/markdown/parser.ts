@@ -191,6 +191,7 @@ function buildHandlers(
 }
 
 const tokenizer = MarkdownIt("commonmark", { html: false });
+tokenizer.enable("strikethrough");
 
 const tokenSpecs: Record<string, ParseSpec> = {
   blockquote: { block: "blockquote" },

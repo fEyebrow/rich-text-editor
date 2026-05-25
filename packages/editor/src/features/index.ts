@@ -9,27 +9,41 @@ import {
   liveItalic,
   serializeLiveItalicPendingMarkdown,
 } from "./italic.ts";
+import {
+  liveStrikethrough,
+  serializeLiveStrikethroughPendingMarkdown,
+  strikethroughKeymap,
+  strikethroughMarkdownParseSpecs,
+  strikethroughMarkdownSerializeSpecs,
+  strikethroughMarkRankEntries,
+  strikethroughMarkSpecs,
+} from "./strikethrough.ts";
 import { liveStrong, serializeLiveStrongPendingMarkdown, strongKeymap } from "./strong.ts";
 import { thematicBreakKeymap, thematicBreakLeaveLine } from "./thematic-break.ts";
 import { unorderedListInputRules, unorderedListKeymap } from "./unordered-list.ts";
 
 export const featureMarkSpecs = {
   ...italicMarkSpecs,
+  ...strikethroughMarkSpecs,
 };
 
 export const featureMarkdownParseSpecs = {
   ...italicMarkdownParseSpecs,
+  ...strikethroughMarkdownParseSpecs,
 };
 
 export const featureMarkdownSerializeSpecs = {
   ...italicMarkdownSerializeSpecs,
+  ...strikethroughMarkdownSerializeSpecs,
 };
 
-export const featureMarkRankEntries = [...italicMarkRankEntries];
+export const featureMarkRankEntries = [...italicMarkRankEntries, ...strikethroughMarkRankEntries];
 
 export function serializeFeatureMarkdown(markdown: string): string {
   return serializeLiveCodePendingMarkdown(
-    serializeLiveStrongPendingMarkdown(serializeLiveItalicPendingMarkdown(markdown)),
+    serializeLiveStrongPendingMarkdown(
+      serializeLiveStrikethroughPendingMarkdown(serializeLiveItalicPendingMarkdown(markdown)),
+    ),
   );
 }
 
@@ -37,6 +51,7 @@ export function createFeaturePlugins(schema: Schema) {
   return [
     liveItalic(schema),
     liveStrong(schema),
+    liveStrikethrough(schema),
     liveCode(schema),
     thematicBreakLeaveLine(schema),
     unorderedListInputRules(schema),
@@ -48,6 +63,7 @@ export function createFeatureKeymaps(schema: Schema) {
     thematicBreakKeymap,
     italicKeymap(schema),
     strongKeymap(schema),
+    strikethroughKeymap(schema),
     codeKeymap(schema),
     unorderedListKeymap(schema),
   ];
