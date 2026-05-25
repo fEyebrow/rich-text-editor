@@ -1,4 +1,5 @@
 import type { Schema } from "prosemirror-model";
+import { blockquoteInputRules } from "./blockquote.ts";
 import { codeKeymap, liveCode, serializeLiveCodePendingMarkdown } from "./code.ts";
 import {
   italicKeymap,
@@ -55,6 +56,7 @@ export function createFeaturePlugins(schema: Schema) {
     liveCode(schema),
     thematicBreakLeaveLine(schema),
     unorderedListInputRules(schema),
+    blockquoteInputRules(schema),
   ];
 }
 
