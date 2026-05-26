@@ -3,6 +3,15 @@ import { atxHeading, atxHeadingKeymap } from "./atx-heading.ts";
 import { blockquoteInputRules } from "./blockquote.ts";
 import { codeKeymap, liveCode, serializeLiveCodePendingMarkdown } from "./code.ts";
 import {
+  highlightKeymap,
+  highlightMarkdownParseSpecs,
+  highlightMarkdownSerializeSpecs,
+  highlightMarkRankEntries,
+  highlightMarkSpecs,
+  liveHighlight,
+  serializeLiveHighlightPendingMarkdown,
+} from "./highlight.ts";
+import {
   italicKeymap,
   italicMarkdownParseSpecs,
   italicMarkdownSerializeSpecs,
@@ -28,24 +37,33 @@ import { unorderedListInputRules, unorderedListKeymap } from "./unordered-list.t
 export const featureMarkSpecs = {
   ...italicMarkSpecs,
   ...strikethroughMarkSpecs,
+  ...highlightMarkSpecs,
 };
 
 export const featureMarkdownParseSpecs = {
   ...italicMarkdownParseSpecs,
   ...strikethroughMarkdownParseSpecs,
+  ...highlightMarkdownParseSpecs,
 };
 
 export const featureMarkdownSerializeSpecs = {
   ...italicMarkdownSerializeSpecs,
   ...strikethroughMarkdownSerializeSpecs,
+  ...highlightMarkdownSerializeSpecs,
 };
 
-export const featureMarkRankEntries = [...italicMarkRankEntries, ...strikethroughMarkRankEntries];
+export const featureMarkRankEntries = [
+  ...italicMarkRankEntries,
+  ...strikethroughMarkRankEntries,
+  ...highlightMarkRankEntries,
+];
 
 export function serializeFeatureMarkdown(markdown: string): string {
-  return serializeLiveCodePendingMarkdown(
-    serializeLiveStrongPendingMarkdown(
-      serializeLiveStrikethroughPendingMarkdown(serializeLiveItalicPendingMarkdown(markdown)),
+  return serializeLiveHighlightPendingMarkdown(
+    serializeLiveCodePendingMarkdown(
+      serializeLiveStrongPendingMarkdown(
+        serializeLiveStrikethroughPendingMarkdown(serializeLiveItalicPendingMarkdown(markdown)),
+      ),
     ),
   );
 }
@@ -55,6 +73,7 @@ export function createFeaturePlugins(schema: Schema) {
     liveItalic(schema),
     liveStrong(schema),
     liveStrikethrough(schema),
+    liveHighlight(schema),
     liveCode(schema),
     thematicBreakLeaveLine(schema),
     atxHeading(schema),
@@ -71,6 +90,7 @@ export function createFeatureKeymaps(schema: Schema) {
     italicKeymap(schema),
     strongKeymap(schema),
     strikethroughKeymap(schema),
+    highlightKeymap(schema),
     codeKeymap(schema),
     unorderedListKeymap(schema),
   ];

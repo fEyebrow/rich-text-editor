@@ -41,6 +41,11 @@ export function liveInlineMark(schema: Schema, config: LiveInlineMarkConfig): Pl
       const inner = match[1];
       const boundary = match[2] ?? "";
       const patternStart = $from.pos - match[0].length;
+      if (
+        textRangeHasMarkName($from.parent, patternStart - $from.start(), match[0].length, "code")
+      ) {
+        return null;
+      }
       const tr = newState.tr;
       const markedText = newState.schema.text(inner, [mark.create()]);
       const boundaryText =
@@ -110,6 +115,8 @@ function pendingDecorations(doc: Node, config: LiveInlineMarkConfig): Decoration
     for (const match of text.matchAll(config.pending)) {
       const start = pos + 1 + (match.index ?? 0);
       const end = start + match[0].length;
+      if (textRangeHasMarkName(node, start - pos - 1, match[0].length, "code")) continue;
+
       const innerStart = match[0].indexOf(match[1]);
       const innerEnd = innerStart + match[1].length;
 
@@ -122,6 +129,23 @@ function pendingDecorations(doc: Node, config: LiveInlineMarkConfig): Decoration
     return false;
   });
   return decos;
+}
+
+function textRangeHasMarkName(node: Node, from: number, length: number, markName: string): boolean {
+  const to = from + length;
+  let offset = 0;
+  let hasMark = false;
+
+  node.forEach((child) => {
+    if (hasMark) return;
+    const childFrom = offset;
+    const childTo = offset + child.nodeSize;
+    offset = childTo;
+    if (childTo <= from || childFrom >= to) return;
+    if (child.marks.some((mark) => mark.type.name === markName)) hasMark = true;
+  });
+
+  return hasMark;
 }
 
 function boundaryDecorations(

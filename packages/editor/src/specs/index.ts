@@ -2,6 +2,7 @@ import { defineEditorSpecFeatures } from "./define.ts";
 import { liveItalicSpec } from "./features/live-italic.cases.ts";
 import { liveStrongSpec } from "./features/live-strong.cases.ts";
 import { liveStrikethroughSpec } from "./features/live-strikethrough.cases.ts";
+import { liveHighlightSpec } from "./features/live-highlight.cases.ts";
 import { thematicBreakSpec } from "./features/thematic-break.cases.ts";
 import { liveCodeSpec } from "./features/live-code.cases.ts";
 import { unorderedListSpec } from "./features/unordered-list.cases.ts";
@@ -13,6 +14,7 @@ const EDITOR_SPEC_FEATURE_DEFINITIONS = [
   liveItalicSpec,
   liveStrongSpec,
   liveStrikethroughSpec,
+  liveHighlightSpec,
   thematicBreakSpec,
   liveCodeSpec,
   unorderedListSpec,

@@ -1,4 +1,5 @@
 import MarkdownIt from "markdown-it";
+import type StateInline from "markdown-it/lib/rules_inline/state_inline.mjs";
 import type Token from "markdown-it/lib/token.mjs";
 import {
   type Attrs,
@@ -190,7 +191,28 @@ function buildHandlers(
   return handlers;
 }
 
+function highlightRule(state: StateInline, silent: boolean): boolean {
+  const start = state.pos;
+  if (!state.src.startsWith("==", start)) return false;
+
+  const end = state.src.indexOf("==", start + 2);
+  if (end === -1) return false;
+
+  const inner = state.src.slice(start + 2, end);
+  if (inner.trim() === "" || inner.includes("\n")) return false;
+
+  if (!silent) {
+    state.push("mark_open", "mark", 1).markup = "==";
+    const token = state.push("text", "", 0);
+    token.content = inner;
+    state.push("mark_close", "mark", -1).markup = "==";
+  }
+  state.pos = end + 2;
+  return true;
+}
+
 const tokenizer = MarkdownIt("commonmark", { html: false });
+tokenizer.inline.ruler.before("emphasis", "highlight", highlightRule);
 tokenizer.enable("strikethrough");
 
 const tokenSpecs: Record<string, ParseSpec> = {
