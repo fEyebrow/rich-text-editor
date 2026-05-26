@@ -50,6 +50,7 @@ import {
 } from "./superscript.ts";
 import { linkKeymap, liveLink, serializeLiveLinkPendingMarkdown } from "./link.ts";
 import { imageKeymap, liveImage } from "./image.ts";
+import { emojiKeymap, liveEmoji } from "./emoji.ts";
 import { liveTaskItem, taskItemInputRules, taskItemKeymap } from "./task-item.ts";
 import { liveStrong, serializeLiveStrongPendingMarkdown, strongKeymap } from "./strong.ts";
 import { thematicBreakKeymap, thematicBreakLeaveLine } from "./thematic-break.ts";
@@ -115,6 +116,7 @@ export function createFeaturePlugins(schema: Schema) {
     liveSuperscript(schema),
     liveHighlight(schema),
     liveImage(schema),
+    liveEmoji(schema),
     liveTaskItem(schema),
     taskItemInputRules(schema),
     liveLink(schema),
@@ -139,6 +141,7 @@ export function createFeatureKeymaps(schema: Schema) {
     superscriptKeymap(schema),
     highlightKeymap(schema),
     imageKeymap(schema),
+    emojiKeymap(schema),
     autolinkKeymap(schema),
     linkKeymap(schema),
     codeKeymap(schema),

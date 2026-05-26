@@ -112,6 +112,9 @@ const nodeRenderers: Record<string, NodeRenderer> = {
       `![${state.esc(node.attrs.alt || "")}](${(node.attrs.src as string).replace(/[()]/g, "\\$&")}${title})`,
     );
   },
+  emoji(state, node) {
+    state.write(`:${node.attrs.shortcode as string}:`);
+  },
   hard_break(state, node, parent, index) {
     for (let i = index + 1; i < parent.childCount; i += 1) {
       if (parent.child(i).type !== node.type) {

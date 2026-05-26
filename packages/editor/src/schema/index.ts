@@ -183,6 +183,35 @@ export const editorSchema = new Schema({
         return ["br"];
       },
     },
+
+    emoji: {
+      inline: true,
+      attrs: {
+        shortcode: {},
+        emoji: {},
+      },
+      group: "inline",
+      draggable: true,
+      parseDOM: [
+        {
+          tag: "span[data-shortcode]",
+          getAttrs(dom) {
+            const el = dom as HTMLElement;
+            return {
+              shortcode: el.getAttribute("data-shortcode"),
+              emoji: el.textContent,
+            };
+          },
+        },
+      ],
+      toDOM(node) {
+        return [
+          "span",
+          { "data-shortcode": node.attrs.shortcode as string },
+          node.attrs.emoji as string,
+        ];
+      },
+    },
   },
 
   marks: {

@@ -10,6 +10,7 @@ import {
   type Schema,
 } from "prosemirror-model";
 import { featureMarkdownParseSpecs } from "../features/index.ts";
+import { lookupShortcode } from "../features/emoji-catalog.ts";
 import { editorSchema } from "../schema/index.ts";
 
 type TokenHandler = (state: ParseState, token: Token, tokens: Token[], i: number) => void;
@@ -233,6 +234,29 @@ function subscriptRule(state: StateInline, silent: boolean): boolean {
   return true;
 }
 
+function emojiRule(state: StateInline, silent: boolean): boolean {
+  const start = state.pos;
+  if (state.src[start] !== ":") return false;
+
+  const end = state.src.indexOf(":", start + 1);
+  if (end === -1) return false;
+
+  const name = state.src.slice(start + 1, end);
+  if (!/^[\w]+$/.test(name)) return false;
+
+  const entry = lookupShortcode(name);
+  if (!entry) return false;
+
+  if (!silent) {
+    const token = state.push("emoji", "span", 0);
+    token.attrSet("data-shortcode", name);
+    token.attrSet("data-emoji", entry.emoji);
+    token.content = name;
+  }
+  state.pos = end + 1;
+  return true;
+}
+
 function superscriptRule(state: StateInline, silent: boolean): boolean {
   const start = state.pos;
   if (state.src[start] !== "^") return false;
@@ -257,6 +281,7 @@ const tokenizer = MarkdownIt("commonmark", { html: false });
 tokenizer.inline.ruler.before("emphasis", "highlight", highlightRule);
 tokenizer.inline.ruler.before("emphasis", "subscript", subscriptRule);
 tokenizer.inline.ruler.before("emphasis", "superscript", superscriptRule);
+tokenizer.inline.ruler.before("emphasis", "emoji", emojiRule);
 tokenizer.enable("strikethrough");
 tokenizer.core.ruler.push("task_list", (coreState) => {
   for (let i = 0; i < coreState.tokens.length; i++) {
@@ -312,6 +337,13 @@ const tokenSpecs: Record<string, ParseSpec> = {
     }),
   },
   hardbreak: { node: "hard_break" },
+  emoji: {
+    node: "emoji",
+    getAttrs: (tok) => ({
+      shortcode: tok.attrGet("data-shortcode"),
+      emoji: tok.attrGet("data-emoji"),
+    }),
+  },
 
   ...featureMarkdownParseSpecs,
   strong: { mark: "strong" },

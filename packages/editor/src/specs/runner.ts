@@ -293,6 +293,9 @@ function serializeNode(
   if (node.tagName === "BR" && node.classList.contains("ProseMirror-trailingBreak")) return "";
   if (node.classList.contains("ProseMirror-separator")) return "";
   if (node.classList.contains("md-task-checkbox")) return "";
+  if (node.classList.contains("md-emoji-icon")) return "";
+  if (node.classList.contains("md-emoji-source-icon")) return "";
+  if (node.classList.contains("md-emoji-popup")) return "";
 
   const children = Array.from(node.childNodes);
   const parts: string[] = [];
@@ -330,6 +333,13 @@ function serializeNode(
     return `<image-loading>${content}</image-loading>`;
   if (node.classList.contains("md-live-image-broken"))
     return `<image-broken>${content}</image-broken>`;
+  if (node.classList.contains("md-live-emoji-src")) return `<emoji-src>${content}</emoji-src>`;
+  if (node.classList.contains("md-live-emoji-shortcode"))
+    return `<emoji-src>${content}</emoji-src>`;
+  if (node.tagName === "SPAN" && node.hasAttribute("data-shortcode")) {
+    const shortcode = node.getAttribute("data-shortcode") ?? "";
+    return `<emoji shortcode="${escapeAttribute(shortcode)}">`;
+  }
   if (node.classList.contains("md-live-image-preview")) {
     const src = node.getAttribute("src") ?? "";
     const alt = node.getAttribute("alt") ?? "";
