@@ -2,6 +2,7 @@ import type { Node, Schema } from "prosemirror-model";
 import type { Command } from "prosemirror-state";
 import { Plugin, TextSelection } from "prosemirror-state";
 import { Decoration, DecorationSet } from "prosemirror-view";
+import { isRenderedAutolink } from "./autolink.ts";
 
 const COMPLETE_LINK_SOURCE = /\[([^\]\n]*)\]\(([^)\n]*)\)/g;
 const LINK_SOURCE_BEFORE_CURSOR = /\[([^\]\n]+)\]\(([^)\n]*)\)$/;
@@ -84,6 +85,7 @@ export function liveLink(_schema: Schema) {
         newState.schema.marks.link.name,
       );
       if (!linkRange || linkRange.href === null) return null;
+      if (isRenderedAutolink(linkRange.label, linkRange.href, linkRange.title)) return null;
 
       const source = `[${linkRange.label}](${linkRange.href})`;
       const labelOffset = Math.max(
@@ -165,6 +167,7 @@ interface LinkMarkRange {
   to: number;
   label: string;
   href: string | null;
+  title: unknown;
 }
 
 function linkSourceRangeContainingPosition(doc: Node, position: number): LinkSourceRange | null {
@@ -230,6 +233,7 @@ function linkMarkRangeContainingPosition(
         to,
         label: node.text,
         href: typeof mark.attrs.href === "string" ? mark.attrs.href : null,
+        title: mark.attrs.title,
       };
       return false;
     }

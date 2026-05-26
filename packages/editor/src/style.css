@@ -134,3 +134,9 @@
 .ProseMirror .md-live-link-url {
   color: var(--rte-muted, #6b6375);
 }
+
+.ProseMirror .md-live-autolink-url {
+  color: var(--rte-accent, #aa3bff);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

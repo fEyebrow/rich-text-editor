@@ -1,5 +1,6 @@
 import type { Schema } from "prosemirror-model";
 import { atxHeading, atxHeadingKeymap } from "./atx-heading.ts";
+import { autolinkKeymap, liveAutolink } from "./autolink.ts";
 import { blockquoteInputRules } from "./blockquote.ts";
 import { codeKeymap, liveCode, serializeLiveCodePendingMarkdown } from "./code.ts";
 import {
@@ -112,6 +113,7 @@ export function createFeaturePlugins(schema: Schema) {
     liveSuperscript(schema),
     liveHighlight(schema),
     liveLink(schema),
+    liveAutolink(schema),
     liveCode(schema),
     thematicBreakLeaveLine(schema),
     atxHeading(schema),
@@ -131,6 +133,7 @@ export function createFeatureKeymaps(schema: Schema) {
     subscriptKeymap(schema),
     superscriptKeymap(schema),
     highlightKeymap(schema),
+    autolinkKeymap(schema),
     linkKeymap(schema),
     codeKeymap(schema),
     unorderedListKeymap(schema),
