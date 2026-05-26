@@ -50,7 +50,7 @@ import {
 } from "./superscript.ts";
 import { linkKeymap, liveLink, serializeLiveLinkPendingMarkdown } from "./link.ts";
 import { imageKeymap, liveImage } from "./image.ts";
-import { liveTaskItem, taskItemInputRules } from "./task-item.ts";
+import { liveTaskItem, taskItemInputRules, taskItemKeymap } from "./task-item.ts";
 import { liveStrong, serializeLiveStrongPendingMarkdown, strongKeymap } from "./strong.ts";
 import { thematicBreakKeymap, thematicBreakLeaveLine } from "./thematic-break.ts";
 import { orderedListInputRules } from "./ordered-list.ts";
@@ -143,5 +143,6 @@ export function createFeatureKeymaps(schema: Schema) {
     linkKeymap(schema),
     codeKeymap(schema),
     unorderedListKeymap(schema),
+    taskItemKeymap(schema),
   ];
 }
