@@ -107,6 +107,11 @@
   vertical-align: sub;
 }
 
+.ProseMirror .md-live-superscript {
+  font-size: 0.75em;
+  vertical-align: super;
+}
+
 .ProseMirror mark,
 .ProseMirror .md-live-highlight {
   background: var(--rte-highlight-bg, #fff1a8);

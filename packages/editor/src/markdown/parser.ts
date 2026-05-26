@@ -233,9 +233,30 @@ function subscriptRule(state: StateInline, silent: boolean): boolean {
   return true;
 }
 
+function superscriptRule(state: StateInline, silent: boolean): boolean {
+  const start = state.pos;
+  if (state.src[start] !== "^") return false;
+
+  const end = state.src.indexOf("^", start + 1);
+  if (end === -1) return false;
+
+  const inner = state.src.slice(start + 1, end);
+  if (inner.trim() === "" || inner.includes("\n")) return false;
+
+  if (!silent) {
+    state.push("sup_open", "sup", 1).markup = "^";
+    const token = state.push("text", "", 0);
+    token.content = inner;
+    state.push("sup_close", "sup", -1).markup = "^";
+  }
+  state.pos = end + 1;
+  return true;
+}
+
 const tokenizer = MarkdownIt("commonmark", { html: false });
 tokenizer.inline.ruler.before("emphasis", "highlight", highlightRule);
 tokenizer.inline.ruler.before("emphasis", "subscript", subscriptRule);
+tokenizer.inline.ruler.before("emphasis", "superscript", superscriptRule);
 tokenizer.enable("strikethrough");
 
 const tokenSpecs: Record<string, ParseSpec> = {
