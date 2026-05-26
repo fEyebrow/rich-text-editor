@@ -47,6 +47,7 @@ import {
   superscriptMarkRankEntries,
   superscriptMarkSpecs,
 } from "./superscript.ts";
+import { linkKeymap, liveLink, serializeLiveLinkPendingMarkdown } from "./link.ts";
 import { liveStrong, serializeLiveStrongPendingMarkdown, strongKeymap } from "./strong.ts";
 import { thematicBreakKeymap, thematicBreakLeaveLine } from "./thematic-break.ts";
 import { orderedListInputRules } from "./ordered-list.ts";
@@ -85,12 +86,16 @@ export const featureMarkRankEntries = [
 ];
 
 export function serializeFeatureMarkdown(markdown: string): string {
-  return serializeLiveHighlightPendingMarkdown(
-    serializeLiveSuperscriptPendingMarkdown(
-      serializeLiveSubscriptPendingMarkdown(
-        serializeLiveCodePendingMarkdown(
-          serializeLiveStrongPendingMarkdown(
-            serializeLiveStrikethroughPendingMarkdown(serializeLiveItalicPendingMarkdown(markdown)),
+  return serializeLiveLinkPendingMarkdown(
+    serializeLiveHighlightPendingMarkdown(
+      serializeLiveSuperscriptPendingMarkdown(
+        serializeLiveSubscriptPendingMarkdown(
+          serializeLiveCodePendingMarkdown(
+            serializeLiveStrongPendingMarkdown(
+              serializeLiveStrikethroughPendingMarkdown(
+                serializeLiveItalicPendingMarkdown(markdown),
+              ),
+            ),
           ),
         ),
       ),
@@ -106,6 +111,7 @@ export function createFeaturePlugins(schema: Schema) {
     liveSubscript(schema),
     liveSuperscript(schema),
     liveHighlight(schema),
+    liveLink(schema),
     liveCode(schema),
     thematicBreakLeaveLine(schema),
     atxHeading(schema),
@@ -125,6 +131,7 @@ export function createFeatureKeymaps(schema: Schema) {
     subscriptKeymap(schema),
     superscriptKeymap(schema),
     highlightKeymap(schema),
+    linkKeymap(schema),
     codeKeymap(schema),
     unorderedListKeymap(schema),
   ];

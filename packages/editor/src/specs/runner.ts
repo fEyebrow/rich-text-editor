@@ -309,6 +309,8 @@ function serializeNode(
   if (node.classList.contains("md-live-superscript")) return `<sup>${content}</sup>`;
   if (node.classList.contains("md-live-highlight")) return `<mark>${content}</mark>`;
   if (node.classList.contains("md-live-code")) return `<code>${content}</code>`;
+  if (node.classList.contains("md-live-link-label")) return `<link-label>${content}</link-label>`;
+  if (node.classList.contains("md-live-link-url")) return `<link-url>${content}</link-url>`;
 
   const serializer = tags[node.tagName];
   return serializer ? serializer(content, node) : content;
