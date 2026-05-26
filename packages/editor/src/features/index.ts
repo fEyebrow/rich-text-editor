@@ -49,6 +49,7 @@ import {
   superscriptMarkSpecs,
 } from "./superscript.ts";
 import { linkKeymap, liveLink, serializeLiveLinkPendingMarkdown } from "./link.ts";
+import { imageKeymap, liveImage } from "./image.ts";
 import { liveStrong, serializeLiveStrongPendingMarkdown, strongKeymap } from "./strong.ts";
 import { thematicBreakKeymap, thematicBreakLeaveLine } from "./thematic-break.ts";
 import { orderedListInputRules } from "./ordered-list.ts";
@@ -112,6 +113,7 @@ export function createFeaturePlugins(schema: Schema) {
     liveSubscript(schema),
     liveSuperscript(schema),
     liveHighlight(schema),
+    liveImage(schema),
     liveLink(schema),
     liveAutolink(schema),
     liveCode(schema),
@@ -133,6 +135,7 @@ export function createFeatureKeymaps(schema: Schema) {
     subscriptKeymap(schema),
     superscriptKeymap(schema),
     highlightKeymap(schema),
+    imageKeymap(schema),
     autolinkKeymap(schema),
     linkKeymap(schema),
     codeKeymap(schema),

@@ -30,6 +30,7 @@ export function liveLink(_schema: Schema) {
           const text = node.textBetween(0, node.content.size, "\n", "\ufffc");
           for (const match of text.matchAll(COMPLETE_LINK_SOURCE)) {
             const offset = match.index ?? 0;
+            if (offset > 0 && text[offset - 1] === "!") continue;
             const from = pos + 1 + offset;
             const label = match[1];
             const href = match[2];
@@ -179,6 +180,8 @@ function linkSourceRangeContainingPosition(doc: Node, position: number): LinkSou
 
     const text = node.textBetween(0, node.content.size, "\n", "\ufffc");
     for (const match of text.matchAll(COMPLETE_LINK_SOURCE)) {
+      const offset = match.index ?? 0;
+      if (offset > 0 && text[offset - 1] === "!") continue;
       const from = pos + 1 + (match.index ?? 0);
       const to = from + match[0].length;
       if (textRangeHasMarkName(node, from - pos - 1, match[0].length, "code")) continue;

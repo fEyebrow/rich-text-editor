@@ -285,6 +285,7 @@ function serializeNode(
   if (!(node instanceof HTMLElement)) return "";
 
   if (node.tagName === "BR" && node.classList.contains("ProseMirror-trailingBreak")) return "";
+  if (node.classList.contains("ProseMirror-separator")) return "";
 
   const children = Array.from(node.childNodes);
   const parts: string[] = [];
@@ -312,6 +313,21 @@ function serializeNode(
   if (node.classList.contains("md-live-link-label")) return `<link-label>${content}</link-label>`;
   if (node.classList.contains("md-live-link-url")) return `<link-url>${content}</link-url>`;
   if (node.classList.contains("md-live-autolink-url")) return `<link-url>${content}</link-url>`;
+  if (node.classList.contains("md-live-image-state"))
+    return `<image-state>${content}</image-state>`;
+  if (node.classList.contains("md-live-image-alt")) return `<image-alt>${content}</image-alt>`;
+  if (node.classList.contains("md-live-image-src")) return `<image-src>${content}</image-src>`;
+  if (node.classList.contains("md-live-image-empty"))
+    return `<image-empty>${content}</image-empty>`;
+  if (node.classList.contains("md-live-image-loading"))
+    return `<image-loading>${content}</image-loading>`;
+  if (node.classList.contains("md-live-image-broken"))
+    return `<image-broken>${content}</image-broken>`;
+  if (node.classList.contains("md-live-image-preview")) {
+    const src = node.getAttribute("src") ?? "";
+    const alt = node.getAttribute("alt") ?? "";
+    return `<image-preview src="${escapeAttribute(src)}" alt="${escapeAttribute(alt)}">`;
+  }
 
   const serializer = tags[node.tagName];
   return serializer ? serializer(content, node) : content;
