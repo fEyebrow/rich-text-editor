@@ -101,7 +101,7 @@ export const editorSchema = new Schema({
     },
 
     bullet_list: {
-      content: "list_item+",
+      content: "(list_item | task_item)+",
       group: "block",
       attrs: { tight: { default: false } },
       parseDOM: [
@@ -120,9 +120,26 @@ export const editorSchema = new Schema({
     list_item: {
       content: "block+",
       defining: true,
-      parseDOM: [{ tag: "li" }],
+      parseDOM: [{ tag: "li:not([data-task])" }],
       toDOM() {
         return ["li", 0];
+      },
+    },
+
+    task_item: {
+      content: "block+",
+      attrs: { checked: { default: false } },
+      defining: true,
+      parseDOM: [
+        {
+          tag: "li[data-task]",
+          getAttrs: (dom) => ({ checked: (dom as HTMLElement).hasAttribute("data-checked") }),
+        },
+      ],
+      toDOM(node) {
+        const attrs: Record<string, string | null> = { "data-task": "" };
+        if (node.attrs.checked) attrs["data-checked"] = "";
+        return ["li", attrs, 0];
       },
     },
 

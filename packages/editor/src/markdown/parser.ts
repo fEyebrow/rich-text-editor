@@ -258,6 +258,27 @@ tokenizer.inline.ruler.before("emphasis", "highlight", highlightRule);
 tokenizer.inline.ruler.before("emphasis", "subscript", subscriptRule);
 tokenizer.inline.ruler.before("emphasis", "superscript", superscriptRule);
 tokenizer.enable("strikethrough");
+tokenizer.core.ruler.push("task_list", (coreState) => {
+  for (let i = 0; i < coreState.tokens.length; i++) {
+    const tok = coreState.tokens[i];
+    if (tok.type !== "list_item_open") continue;
+    for (let j = i + 1; j < coreState.tokens.length; j++) {
+      const t = coreState.tokens[j];
+      if (t.type === "list_item_close") break;
+      if (t.type !== "inline" || !t.children) continue;
+      const first = t.children[0];
+      if (!first || first.type !== "text") break;
+      const taskMatch = /^\[([ xX])\]( ?)/.exec(first.content);
+      if (!taskMatch) break;
+      tok.attrSet("data-task", "");
+      if (taskMatch[1] !== " ") tok.attrSet("data-checked", "");
+      first.content = first.content.slice(3 + taskMatch[2].length);
+      if (!first.content) t.children.shift();
+      break;
+    }
+  }
+  return false;
+});
 
 const tokenSpecs: Record<string, ParseSpec> = {
   blockquote: { block: "blockquote" },
@@ -305,6 +326,17 @@ const tokenSpecs: Record<string, ParseSpec> = {
 };
 
 const handlers = buildHandlers(editorSchema, tokenSpecs);
+
+const origListItemOpen = handlers["list_item_open"];
+handlers["list_item_open"] = (state, tok, toks, i) => {
+  if (tok.attrGet("data-task") !== null) {
+    state.openNode(editorSchema.nodes.task_item, {
+      checked: tok.attrGet("data-checked") !== null,
+    });
+  } else {
+    origListItemOpen(state, tok, toks, i);
+  }
+};
 
 export const markdownParser = {
   parse(text: string): ProseMirrorNode {

@@ -78,7 +78,14 @@ const nodeRenderers: Record<string, NodeRenderer> = {
     state.closeBlock(node);
   },
   bullet_list(state, node) {
-    state.renderList(node, "  ", () => `${node.attrs.bullet || "*"} `);
+    state.renderList(node, "  ", (i) => {
+      const child = node.child(i);
+      const bullet = (node.attrs.bullet as string | undefined) || "*";
+      if (child.type.name === "task_item") {
+        return `${bullet} ${child.attrs.checked ? "[x]" : "[ ]"} `;
+      }
+      return `${bullet} `;
+    });
   },
   ordered_list(state, node) {
     const start = (node.attrs.order as number) || 1;
@@ -90,6 +97,9 @@ const nodeRenderers: Record<string, NodeRenderer> = {
     });
   },
   list_item(state, node) {
+    state.renderContent(node);
+  },
+  task_item(state, node) {
     state.renderContent(node);
   },
   paragraph(state, node) {

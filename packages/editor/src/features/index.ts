@@ -50,6 +50,7 @@ import {
 } from "./superscript.ts";
 import { linkKeymap, liveLink, serializeLiveLinkPendingMarkdown } from "./link.ts";
 import { imageKeymap, liveImage } from "./image.ts";
+import { liveTaskItem, taskItemInputRules } from "./task-item.ts";
 import { liveStrong, serializeLiveStrongPendingMarkdown, strongKeymap } from "./strong.ts";
 import { thematicBreakKeymap, thematicBreakLeaveLine } from "./thematic-break.ts";
 import { orderedListInputRules } from "./ordered-list.ts";
@@ -114,6 +115,8 @@ export function createFeaturePlugins(schema: Schema) {
     liveSuperscript(schema),
     liveHighlight(schema),
     liveImage(schema),
+    liveTaskItem(schema),
+    taskItemInputRules(schema),
     liveLink(schema),
     liveAutolink(schema),
     liveCode(schema),

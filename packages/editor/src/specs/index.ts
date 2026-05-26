@@ -8,6 +8,7 @@ import { liveSuperscriptSpec } from "./features/live-superscript.cases.ts";
 import { liveLinkSpec } from "./features/live-link.cases.ts";
 import { liveAutolinkSpec } from "./features/live-autolink.cases.ts";
 import { liveImageSpec } from "./features/live-image.cases.ts";
+import { taskItemSpec } from "./features/task-item.cases.ts";
 import { thematicBreakSpec } from "./features/thematic-break.cases.ts";
 import { liveCodeSpec } from "./features/live-code.cases.ts";
 import { unorderedListSpec } from "./features/unordered-list.cases.ts";
@@ -25,6 +26,7 @@ const EDITOR_SPEC_FEATURE_DEFINITIONS = [
   liveLinkSpec,
   liveAutolinkSpec,
   liveImageSpec,
+  taskItemSpec,
   thematicBreakSpec,
   liveCodeSpec,
   unorderedListSpec,

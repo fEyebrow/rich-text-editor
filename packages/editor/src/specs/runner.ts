@@ -221,7 +221,13 @@ const DEFAULT_TAGS: Record<string, TagSerializer> = {
     return start ? `<ol start="${escapeAttribute(start)}">${c}</ol>` : `<ol>${c}</ol>`;
   },
   UL: (c) => `<ul>${c}</ul>`,
-  LI: (c) => `<li>${c}</li>`,
+  LI: (c, el) => {
+    if (el.hasAttribute("data-task")) {
+      const checked = el.hasAttribute("data-checked");
+      return `<task-item checked="${checked}">${c}</task-item>`;
+    }
+    return `<li>${c}</li>`;
+  },
   DIV: (c, el) => {
     if (el.childNodes.length === 1 && el.firstElementChild?.tagName === "HR") return "<hr>";
     return c;
@@ -286,6 +292,7 @@ function serializeNode(
 
   if (node.tagName === "BR" && node.classList.contains("ProseMirror-trailingBreak")) return "";
   if (node.classList.contains("ProseMirror-separator")) return "";
+  if (node.classList.contains("md-task-checkbox")) return "";
 
   const children = Array.from(node.childNodes);
   const parts: string[] = [];
